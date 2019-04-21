@@ -79,7 +79,7 @@ namespace SevenLang.Core.Lexers
                             int d = -1;
                             while ((d = this.textReader.Peek()) != -1)
                             {
-                                if (!char.IsLetterOrDigit((char)c) && d != '+' && d != '+' && d != '-' && d != '*' && d != '/')
+                                if (!char.IsLetterOrDigit((char)d) && d != '+' && d != '-' && d != '*' && d != '/')
                                     break;
                                 d = this.textReader.Read();
                                 identifier += ((char)d).ToString();
