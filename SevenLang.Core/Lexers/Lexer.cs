@@ -2,11 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SevenLang.Core.Lexers
 {
     public class Lexer : IDisposable
     {
+        private static readonly char[] VALID_CHARACTER = new char[] { '+', '-', '*', '/', '=', '!', '<', '>' };
+
         private readonly TextReader textReader;
 
         public Lexer(TextReader textReader)
@@ -47,6 +50,18 @@ namespace SevenLang.Core.Lexers
                             yield return new NumberToken(double.Parse(s));
                         }
                         break;
+                    case '#':
+                        {
+                            this.textReader.Read();
+                            int d = this.textReader.Read();
+                            if (d == 't')
+                                yield return new BooleanToken(true);
+                            else if (d == 'f')
+                                yield return new BooleanToken(false);
+                            else
+                                throw new Exception("Unexpected char.");
+                        }
+                        break;
                     case '"':
                         {
                             this.textReader.Read();
@@ -79,7 +94,7 @@ namespace SevenLang.Core.Lexers
                             int d = -1;
                             while ((d = this.textReader.Peek()) != -1)
                             {
-                                if (!char.IsLetterOrDigit((char)d) && d != '+' && d != '-' && d != '*' && d != '/')
+                                if (!char.IsLetterOrDigit((char)d) && !VALID_CHARACTER.Contains((char)d))
                                     break;
                                 d = this.textReader.Read();
                                 identifier += ((char)d).ToString();

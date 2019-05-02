@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenLang.Core", "SevenLang.Core\SevenLang.Core.csproj", "{C5B88427-9082-4F0D-9D57-339ACE1F555D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenLang.Core", "SevenLang.Core\SevenLang.Core.csproj", "{C5B88427-9082-4F0D-9D57-339ACE1F555D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenLang.Test", "SevenLang.Test\SevenLang.Test.csproj", "{2D238C12-8971-4412-B48D-0770F7E24DD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenLang.Test", "SevenLang.Test\SevenLang.Test.csproj", "{2D238C12-8971-4412-B48D-0770F7E24DD9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenLang.Sample", "SevenLang.Sample\SevenLang.Sample.csproj", "{B17B8345-FE98-47E6-9A4B-8C2532386619}"
 EndProject

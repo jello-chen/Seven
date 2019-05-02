@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SevenLang.Core.Lexers
+﻿namespace SevenLang.Core.Lexers
 {
     class IdentifierToken: Token
     {
