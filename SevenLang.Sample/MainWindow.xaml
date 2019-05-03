@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SevenLang.Sample"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="Seven" Height="450" Width="800">
+    <Grid Margin="10 10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="60" />
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="0" Grid.Column="0" x:Name="tbSourceCode" HorizontalScrollBarVisibility="Auto"/>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="tbOutput" IsReadOnly="True" Focusable="False"/>
+        <WrapPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="btnEvaluate" Content="Evaluate" Height="30" Width="100" Click="BtnEvaluate_Click"></Button>
+        </WrapPanel>
     </Grid>
 </Window>

@@ -94,5 +94,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SevenLang.Core\SevenLang.Core.csproj">
+      <Project>{c5b88427-9082-4f0d-9d57-339ace1f555d}</Project>
+      <Name>SevenLang.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

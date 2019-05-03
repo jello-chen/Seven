@@ -8,12 +8,14 @@ namespace SevenLang.Core.Parsers
 {
     public class Parser
     {
-        public IExpression Parse(IEnumerable<Token> tokens)
+        public IEnumerable<IExpression> Parse(IEnumerable<Token> tokens)
         {
             var queue = new Queue<Token>(tokens.Where(t => t != Token.EOF && (!(t is CommentToken))));
-            if (queue.Count == 0) throw new Exception("No tokens");
-            var exp = ParseImpl(queue);
-            return exp.GetExpression();
+            while (queue.Count > 0)
+            {
+                var exp = ParseImpl(queue);
+                yield return exp.GetExpression();
+            }
         }
 
         private SyntaxExpression ParseImpl(Queue<Token> tokens)
@@ -119,9 +121,9 @@ namespace SevenLang.Core.Parsers
 
     public abstract class Value<T>: Value
     {
-        public Value(T underlying) => Underlying = underlying;
+        public Value(T raw) => Raw = raw;
 
-        public T Underlying { get; }
+        public T Raw { get; }
     }
 
     public class Bool : Value<bool>
@@ -225,7 +227,7 @@ namespace SevenLang.Core.Parsers
         public Value Evaluate(Dictionary<string, IExpression> env)
         {
             var test = Test.Evaluate(env) as Value<bool>;
-            return test.Underlying ? TrueBranch.Evaluate(env) : ElseBranch.Evaluate(env);
+            return test.Raw ? TrueBranch.Evaluate(env) : ElseBranch.Evaluate(env);
         }
     }
 
@@ -261,7 +263,7 @@ namespace SevenLang.Core.Parsers
         {
             if(Op == "+" || Op == "-" || Op == "*" || Op == "/" || Op == "max" || Op == "min")
             {
-                IEnumerable<double> nums = Arguments.Select(x => ((Number)x.Evaluate(env)).Underlying);
+                IEnumerable<double> nums = Arguments.Select(x => ((Number)x.Evaluate(env)).Raw);
 
                 if (Op == "max")
                     return new Number(nums.Max());
@@ -288,8 +290,8 @@ namespace SevenLang.Core.Parsers
             }
             if(Op == "<" || Op == ">" || Op == "=" || Op == "!=" || Op == ">=" || Op == "<=")
             {
-                double n1 = ((Number)Arguments[0].Evaluate(env)).Underlying;
-                double n2 = ((Number)Arguments[1].Evaluate(env)).Underlying;
+                double n1 = ((Number)Arguments[0].Evaluate(env)).Raw;
+                double n2 = ((Number)Arguments[1].Evaluate(env)).Raw;
                 switch (Op)
                 {
                     case "<":
@@ -308,14 +310,14 @@ namespace SevenLang.Core.Parsers
             }
             if(Op == "and" || Op == "or" || Op == "not")
             {
-                bool b1 = ((Bool)Arguments[0].Evaluate(env)).Underlying;
+                bool b1 = ((Bool)Arguments[0].Evaluate(env)).Raw;
                 switch (Op)
                 {
                     case "not":
                         return new Bool(!b1);
                     default:
                         {
-                            bool b2 = ((Bool)Arguments[1].Evaluate(env)).Underlying;
+                            bool b2 = ((Bool)Arguments[1].Evaluate(env)).Raw;
                             return Op == "and" ? new Bool(b1 && b2) : new Bool(b1 || b2);
                         }
                 }
