@@ -72,6 +72,14 @@ namespace SevenLang.Test
             Assert.Equal(120, value.Raw);
         }
 
+        [Fact]
+        public void TestMutualCall()
+        {
+            Dictionary<string, IExpression> env = new Dictionary<string, IExpression>();
+            var value = Evaluate("(define square (lambda (n) (* n n))) (define inc (lambda (n) (+ n 1))) (square (inc 2))", env) as Number;
+            Assert.Equal(9, value.Raw);
+        }
+
         private Value Evaluate(string input, Dictionary<string, IExpression> env)
         {
             using (var sr = new StringReader(input))
