@@ -56,6 +56,21 @@ namespace SevenLang.Test
         }
 
         [Fact]
+        public void TestList()
+        {
+            var value = Evaluate("(list 1 2 3)", null) as List;
+            Assert.Equal("(1 2 3)", value.ToString());
+        }
+
+        [Fact]
+        public void TestMap()
+        {
+            Dictionary<string, IExpression> env = new Dictionary<string, IExpression>();
+            var value = Evaluate("(map (lambda (n1 n2 n3) (+ n1 n2 n3)) (list 1 2 3) (list 4 5 6) (list 7 8 9))", env) as List;
+            Assert.Equal("(12 15 18)", value.ToString());
+        }
+
+        [Fact]
         public void TestCall()
         {
             Dictionary<string, IExpression> env = new Dictionary<string, IExpression>();

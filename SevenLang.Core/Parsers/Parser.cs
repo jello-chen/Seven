@@ -1,5 +1,6 @@
 ﻿using SevenLang.Core.Lexers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -103,6 +104,10 @@ namespace SevenLang.Core.Parsers
                     return new Define(((SyntaxExpressionAtom)Exps.Dequeue()).Token.Text, Exps.Dequeue().GetExpression());
                 case "if":
                     return new If(Exps.Dequeue().GetExpression(), Exps.Dequeue().GetExpression(), Exps.Dequeue().GetExpression());
+                case "list":
+                    return new List(Exps.Select(x => x.GetExpression()).ToArray());
+                case "map":
+                    return new Function(atom.Token.Text, Exps.Select(x => x.GetExpression()).ToArray());
                 default:
                     return new Call(atom.GetExpression(), Exps.Select(x => x.GetExpression()).ToArray());
             }
@@ -124,25 +129,29 @@ namespace SevenLang.Core.Parsers
         public Value(T raw) => Raw = raw;
 
         public T Raw { get; }
+
+        public override string ToString() => Raw.ToString();
     }
 
     public class Bool : Value<bool>
     {
-        public Bool(bool underlying) : base(underlying)
+        public Bool(bool raw) : base(raw)
         {
         }
+
+        public override string ToString() => Raw ? "#t" : "#f";
     }
 
     public class Number : Value<double>
     {
-        public Number(double underlying) : base(underlying)
+        public Number(double raw) : base(raw)
         {
         }
     }
 
     public class Literal : Value<string>
     {
-        public Literal(string underlying) : base(underlying)
+        public Literal(string raw) : base(raw)
         {
         }
     }
@@ -324,5 +333,77 @@ namespace SevenLang.Core.Parsers
             }
             throw new NotImplementedException();
         }
+    }
+
+    public class Function : IExpression
+    {
+        public Function(string name, params IExpression[] parameters)
+        {
+            Name = name;
+            Parameters = parameters;
+        }
+
+        public string Name { get; }
+        public IExpression[] Parameters { get; }
+
+        public Value Evaluate(Dictionary<string, IExpression> env)
+        {
+            switch (Name)
+            {
+                case "map":
+                    var variable = Parameters[0] as Variable;
+                    var lists = Parameters.Skip(1).Select(x => (List)x.Evaluate(env)).ToArray();
+                    if (variable != null)
+                    {
+                        if(variable.Name == "+")
+                        {
+                            return lists.Aggregate((s1, s2) =>
+                            {
+                                var items = new IExpression[s1.Parameters.Length];
+                                for (int i = 0; i < s1.Parameters.Length; i++)
+                                {
+                                    var n1 = s1.Parameters[i] as Number;
+                                    var n2 = s2.Parameters[i] as Number;
+                                    items[i] = new Number(n1.Raw + n2.Raw);
+                                }
+                                return new List(items);
+                            });
+                        }
+                    }
+                    else
+                    {
+                        var closure = Parameters[0].Evaluate(env) as Closure;
+                        if(closure != null)
+                        {
+                            var itemLength = lists[0].Parameters.Length;
+                            var items = new IExpression[itemLength];
+                            for (int i = 0; i < itemLength; i++)
+                            {
+                                foreach (var pair in closure.Lambda.Parameters.Zip(lists.Select(args => args.Parameters[i]), (p, arg) => new { p, arg }))
+                                {
+                                    closure.Context[pair.p] = pair.arg;
+                                }
+                                items[i] = closure.Lambda.Body.Evaluate(closure.Context);
+                            }
+                            return new List(items);
+                        }
+                    }
+                    break;
+            }
+            throw new NotSupportedException();
+        }
+    }
+
+    public class List : Value
+    {
+        public List(IExpression[] parameters)
+        {
+            Parameters = parameters;
+        }
+
+        public IExpression[] Parameters { get; }
+
+        public override string ToString()
+            => "(" + string.Join(" ", Parameters.Select(v => v.ToString())) + ")";
     }
 }
